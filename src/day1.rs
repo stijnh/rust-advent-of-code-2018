@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use crate::common::read_file_lines;
+use std::collections::HashSet;
 
 pub fn run(_: &[&str]) {
     let lines = read_file_lines("inputs/day1")
@@ -24,6 +24,6 @@ pub fn run(_: &[&str]) {
             break;
         }
     }
-    
+
     println!("answer B: {}", value);
 }

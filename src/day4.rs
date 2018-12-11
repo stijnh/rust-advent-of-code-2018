@@ -17,7 +17,6 @@ struct Record {
     event: Event,
 }
 
-
 pub fn run(_: &[&str]) {
     let re_line = Regex::new(r"\[(\d\d\d\d)[-](\d\d)[-](\d\d) (\d\d):(\d\d)\] (.*)").unwrap();
     let re_guard = Regex::new(r"Guard #(\d+) begins shift").unwrap();
@@ -26,11 +25,7 @@ pub fn run(_: &[&str]) {
 
     for line in read_file_lines("inputs/day4") {
         let cap = re_line.captures(&line).unwrap();
-        let mut matches = cap
-            .iter()
-            .map(|x| x.unwrap())
-            .map(|x| x.as_str())
-            .skip(1);
+        let mut matches = cap.iter().map(|x| x.unwrap()).map(|x| x.as_str()).skip(1);
 
         let date = matches
             .by_ref()
@@ -84,12 +79,8 @@ pub fn run(_: &[&str]) {
         }
     }
 
-    let best_guard = *sleep_total
-        .iter()
-        .max_by_key(|p| p.1)
-        .map(|p| p.0)
-        .unwrap();
-        
+    let best_guard = *sleep_total.iter().max_by_key(|p| p.1).map(|p| p.0).unwrap();
+
     let minute = sleep_minute
         .iter()
         .filter(|p| (p.0).0 == best_guard)
@@ -97,8 +88,16 @@ pub fn run(_: &[&str]) {
         .map(|p| (p.0).1)
         .unwrap();
 
-    println!("best guard: {} ({} minutes asleep)", best_guard, sleep_total[&best_guard]);
-    println!("answer A: {} x {} = {}", minute, best_guard, minute * best_guard);
+    println!(
+        "best guard: {} ({} minutes asleep)",
+        best_guard, sleep_total[&best_guard]
+    );
+    println!(
+        "answer A: {} x {} = {}",
+        minute,
+        best_guard,
+        minute * best_guard
+    );
 
     let answer = sleep_minute
         .iter()
@@ -106,5 +105,10 @@ pub fn run(_: &[&str]) {
         .map(|p| p.0)
         .unwrap();
 
-    println!("answer B: {} x {} = {}", answer.0, answer.1, answer.0 * answer.1);
+    println!(
+        "answer B: {} x {} = {}",
+        answer.0,
+        answer.1,
+        answer.0 * answer.1
+    );
 }

@@ -12,7 +12,8 @@ pub fn run(_: &[&str]) {
     for line in read_file_lines("inputs/day3") {
         let cap = re.captures(&line).unwrap();
 
-        let numbers = cap.iter()
+        let numbers = cap
+            .iter()
             .skip(1)
             .map(|m| m.unwrap().as_str())
             .map(|x| x.parse::<usize>().unwrap())
@@ -43,7 +44,8 @@ pub fn run(_: &[&str]) {
         }
     }
 
-    let total = fabric.iter()
+    let total = fabric
+        .iter()
         .map(|v| v.iter())
         .flatten()
         .filter(|x| x.0 > 1)

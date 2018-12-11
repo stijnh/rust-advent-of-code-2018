@@ -1,5 +1,5 @@
-use regex::Regex;
 use crate::common::read_file_lines;
+use regex::Regex;
 use std::collections::HashSet;
 
 fn part_a(edges: &[(char, char)]) {
@@ -56,7 +56,6 @@ fn part_b(edges: &[(char, char)]) {
             active_jobs.remove(&job);
         }
 
-
         // Assign candidate jobs to idle workers
         let mut candidate_jobs = pending_jobs.clone();
 
@@ -66,9 +65,7 @@ fn part_b(edges: &[(char, char)]) {
             }
         }
 
-        let idle_workers = workers
-            .iter_mut()
-            .filter(|w| w.1.is_none());
+        let idle_workers = workers.iter_mut().filter(|w| w.1.is_none());
 
         for (worker, job) in idle_workers.zip(candidate_jobs) {
             pending_jobs.remove(&job);
@@ -77,17 +74,12 @@ fn part_b(edges: &[(char, char)]) {
             let job_time = 61 + (job as i32 - 'A' as i32);
             *worker = (time + job_time, Some(job));
         }
-    };
+    }
 
-    let total_time = workers
-        .iter()
-        .map(|w| w.0)
-        .max()
-        .unwrap();
+    let total_time = workers.iter().map(|w| w.0).max().unwrap();
 
     println!("answer B: {:?}", total_time);
 }
-
 
 pub fn run(_: &[&str]) {
     let re = Regex::new(r"Step (.) must be finished before step (.) can begin.").unwrap();

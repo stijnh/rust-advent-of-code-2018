@@ -17,13 +17,10 @@ pub fn run(_: &[&str]) {
     }
 
     let mut sum_grid = vec![vec![0; GRID_SIZE + 1]; GRID_SIZE + 1];
-    for i in 1..(GRID_SIZE+1) {
-        for j in 1..(GRID_SIZE+1) {
-            sum_grid[i][j] =
-                grid[i - 1][j - 1]
-                + sum_grid[i - 1][j] 
-                + sum_grid[i][j - 1] 
-                - sum_grid[i -1][j - 1];
+    for i in 1..(GRID_SIZE + 1) {
+        for j in 1..(GRID_SIZE + 1) {
+            sum_grid[i][j] = grid[i - 1][j - 1] + sum_grid[i - 1][j] + sum_grid[i][j - 1]
+                - sum_grid[i - 1][j - 1];
         }
     }
 
@@ -31,11 +28,8 @@ pub fn run(_: &[&str]) {
 
     for i in 0..(GRID_SIZE - 2) {
         for j in 0..(GRID_SIZE - 2) {
-            let mut score = 
-                sum_grid[i + 3][j + 3] 
-                - sum_grid[i][j + 3]
-                - sum_grid[i + 3][j]
-                + sum_grid[i][j];
+            let mut score =
+                sum_grid[i + 3][j + 3] - sum_grid[i][j + 3] - sum_grid[i + 3][j] + sum_grid[i][j];
 
             if score > best.0 {
                 best = (score, i + 1, j + 1);
@@ -49,11 +43,9 @@ pub fn run(_: &[&str]) {
     for size in 1..GRID_SIZE {
         for i in 0..(GRID_SIZE - size) {
             for j in 0..(GRID_SIZE - size) {
-                let mut score = 
-                    sum_grid[i + size][j + size] 
-                    - sum_grid[i][j + size]
-                    - sum_grid[i + size][j]
-                    + sum_grid[i][j];
+                let mut score =
+                    sum_grid[i + size][j + size] - sum_grid[i][j + size] - sum_grid[i + size][j]
+                        + sum_grid[i][j];
 
                 if score > best.0 {
                     best = (score, i + 1, j + 1, size);

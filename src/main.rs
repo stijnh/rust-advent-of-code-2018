@@ -4,6 +4,8 @@ extern crate regex;
 
 mod common;
 mod day1;
+mod day10;
+mod day11;
 mod day2;
 mod day3;
 mod day4;
@@ -12,8 +14,6 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
-mod day10;
-mod day11;
 
 fn main() {
     let mut args = env::args();
@@ -39,11 +39,11 @@ fn main() {
     match name.clone().map(|x| x.parse::<usize>()) {
         Some(Ok(i)) if (i > 0 && i <= funs.len()) => {
             funs[i - 1](&rest);
-        },
+        }
         Some(_) => {
             println!("invalid day: {:?}", name.unwrap_or_default());
             return;
-        },
+        }
         _ => {
             println!("usage: {} [day]", binary);
             return;

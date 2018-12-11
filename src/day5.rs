@@ -35,7 +35,9 @@ pub fn shrink_polymere(mut vec: Vec<char>) -> Vec<char> {
 }
 
 pub fn run(_: &[&str]) {
-    let mut vec = read_file_lines("inputs/day5")[0].chars().collect::<Vec<_>>();
+    let mut vec = read_file_lines("inputs/day5")[0]
+        .chars()
+        .collect::<Vec<_>>();
     vec = shrink_polymere(vec);
 
     println!("answer A: {:?}", vec.len());

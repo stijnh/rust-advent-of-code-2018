@@ -1,9 +1,10 @@
-use regex::Regex;
 use crate::common::read_file_lines;
+use regex::Regex;
 
 pub fn run(_: &[&str]) {
     let mut points = vec![];
-    let re = Regex::new(r"position=<([-0-9 ]+),([-0-9 ]+)> velocity=<([-0-9 ]+),([-0-9 ]+)>").unwrap();
+    let re =
+        Regex::new(r"position=<([-0-9 ]+),([-0-9 ]+)> velocity=<([-0-9 ]+),([-0-9 ]+)>").unwrap();
 
     for line in read_file_lines("inputs/day10") {
         let matches = re.captures(&line).unwrap();
@@ -14,7 +15,7 @@ pub fn run(_: &[&str]) {
             .map(|x| x.trim())
             .map(|x| x.parse::<i64>().unwrap())
             .collect::<Vec<_>>();
-            
+
         points.push((vec[0], vec[1], vec[2], vec[3]));
     }
 
@@ -37,11 +38,10 @@ pub fn run(_: &[&str]) {
                     let bx = i64::max(bx, x);
                     let by = i64::max(by, y);
                     Some((ax, ay, bx, by))
-                },
-                None => Some((x, y, x, y))
+                }
+                None => Some((x, y, x, y)),
             };
         }
-
 
         let bounds = bounds.unwrap();
         let area = (bounds.2 - bounds.0) * (bounds.3 - bounds.1);

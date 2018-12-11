@@ -1,6 +1,10 @@
 use crate::common::read_file_lines;
 
-pub fn area_per_center(centers: &[(i32, i32)], (xmin, xmax): (i32, i32), (ymin, ymax): (i32, i32)) -> Vec<i32> {
+pub fn area_per_center(
+    centers: &[(i32, i32)],
+    (xmin, xmax): (i32, i32),
+    (ymin, ymax): (i32, i32),
+) -> Vec<i32> {
     let mut area = vec![0; centers.len()];
 
     for x in xmin..=xmax {
@@ -26,7 +30,11 @@ pub fn area_per_center(centers: &[(i32, i32)], (xmin, xmax): (i32, i32), (ymin, 
     area
 }
 
-pub fn total_distance_less_than_1000(centers: &[(i32, i32)], (xmin, xmax): (i32, i32), (ymin, ymax): (i32, i32)) -> i32 {
+pub fn total_distance_less_than_1000(
+    centers: &[(i32, i32)],
+    (xmin, xmax): (i32, i32),
+    (ymin, ymax): (i32, i32),
+) -> i32 {
     let mut output = 0;
 
     for x in xmin..=xmax {
@@ -55,15 +63,10 @@ pub fn run(_: &[&str]) {
         .map(|(x, y)| (x.parse::<i32>().unwrap(), y.parse::<i32>().unwrap()))
         .collect::<Vec<_>>();
 
-
     let a = area_per_center(&coords, (-1500, 2500), (-1500, 2500));
     let b = area_per_center(&coords, (-2500, 3500), (-2500, 3500));
 
-    let result = a.iter()
-        .zip(b.iter())
-        .filter(|v| v.0 == v.1)
-        .max()
-        .unwrap();
+    let result = a.iter().zip(b.iter()).filter(|v| v.0 == v.1).max().unwrap();
 
     println!("answer A: {:?}", result);
 
