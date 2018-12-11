@@ -10,31 +10,37 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 fn main() {
     let mut args = env::args();
     let binary = args.next().unwrap();
-    let name = args.next().unwrap_or("".to_string());
+    let name = args.next();
     let tail = args.collect::<Vec<_>>();
     let rest = tail.iter().map(|x| x as &str).collect::<Vec<_>>();
 
-    if name == "1" {
-        day1::run(&rest);
-    } else if name == "2" {
-        day2::run(&rest);
-    } else if name == "3" {
-        day3::run(&rest);
-    } else if name == "4" {
-        day4::run(&rest);
-    } else if name == "5" {
-        day5::run(&rest);
-    } else if name == "6" {
-        day6::run(&rest);
-    } else if name == "7" {
-        day7::run(&rest);
-    } else if name == "" {
-        println!("usage: {} [day]", binary);
-    } else {
-        println!("invalid day: {}", name);
+    let funs = [
+        day1::run,
+        day2::run,
+        day3::run,
+        day4::run,
+        day5::run,
+        day6::run,
+        day7::run,
+        day8::run,
+    ];
+
+    match name.clone().map(|x| x.parse::<usize>()) {
+        Some(Ok(i)) if (i > 0 && i <= funs.len()) => {
+            funs[i - 1](&rest);
+        },
+        Some(_) => {
+            println!("invalid day: {:?}", name.unwrap_or_default());
+            return;
+        },
+        _ => {
+            println!("usage: {} [day]", binary);
+            return;
+        }
     }
 }
