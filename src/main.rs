@@ -1,11 +1,14 @@
+#![feature(try_from)]
 use std::env;
 
 extern crate regex;
 
+#[macro_use]
 mod common;
 mod day1;
 mod day10;
 mod day11;
+mod day12;
 mod day2;
 mod day3;
 mod day4;
@@ -34,6 +37,7 @@ fn main() {
         day9::run,
         day10::run,
         day11::run,
+        day12::run,
     ];
 
     match name.clone().map(|x| x.parse::<usize>()) {

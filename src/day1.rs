@@ -7,6 +7,7 @@ pub fn run(_: &[&str]) {
         .map(|x| x.parse::<i64>().unwrap())
         .collect::<Vec<_>>();
 
+    // iterate over list once
     let mut value = 0i64;
     for delta in lines.iter() {
         value += delta;
@@ -14,6 +15,7 @@ pub fn run(_: &[&str]) {
 
     println!("answer A: {}", value);
 
+    // iterate over list repeatedly until duplicate is found
     let mut seen = HashSet::new();
     value = 0;
 
