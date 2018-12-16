@@ -1,5 +1,5 @@
 use crate::common::read_file_lines;
-use regex::{Regex, Captures};
+use regex::{Captures, Regex};
 use std::default::Default;
 
 type Instr = [i32; 4];
@@ -9,7 +9,8 @@ fn parse_captures(re: &Regex, line: &str) -> [i32; 4] {
     if let Some(cap) = re.captures(line) {
         let mut output = [0; 4];
 
-        let vec = cap.iter()
+        let vec = cap
+            .iter()
             .skip(1)
             .map(|x| x.unwrap().as_str())
             .map(|x| x.parse::<i32>().expect(x))
@@ -18,8 +19,7 @@ fn parse_captures(re: &Regex, line: &str) -> [i32; 4] {
 
         output
     } else {
-        panic!("failed regex '{}' on '{}'",
-               re.as_str(), line);
+        panic!("failed regex '{}' on '{}'", re.as_str(), line);
     }
 }
 
@@ -55,10 +55,10 @@ fn exec_instr(opcode: i32, a: i32, b: i32, c: i32, mut regs: Regs) -> Regs {
 }
 
 fn name_instr(opcode: i32) -> &'static str {
-    let names = ["addr", "addi", "mulr", "muli",
-                 "banr", "bani", "borr", "bori",
-                 "setr", "seti", "gtir", "gtri",
-                 "gtrr", "eqir", "eqri", "eqrr"];
+    let names = [
+        "addr", "addi", "mulr", "muli", "banr", "bani", "borr", "bori", "setr", "seti", "gtir",
+        "gtri", "gtrr", "eqir", "eqri", "eqrr",
+    ];
 
     names.get(opcode as usize).unwrap_or(&"unknown")
 }
@@ -80,7 +80,7 @@ fn parse_input() -> (Vec<(Regs, Instr, Regs)>, Vec<Instr>) {
         index += 4;
 
         samples.push((before, instr, after));
-    };
+    }
 
     index += 2;
 
@@ -160,7 +160,7 @@ fn find_mapping(samples: &[(Regs, Instr, Regs)]) -> [i32; NUM_OPCODES] {
 pub fn run(_: &[&str]) {
     let (samples, program) = parse_input();
     let mapping = find_mapping(&samples);
-    
+
     let mut answer_a = 0;
     for (before, instr, after) in samples.iter().cloned() {
         let [_, a, b, c] = instr;

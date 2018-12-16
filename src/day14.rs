@@ -4,7 +4,10 @@ use std::collections::HashSet;
 pub fn run(_: &[&str]) {
     let line = read_file_lines("inputs/day14")[0].clone();
     let n = line.parse::<usize>().unwrap();
-    let pattern = line.chars().map(|x| x as i8 - '0' as i8).collect::<Vec<_>>();
+    let pattern = line
+        .chars()
+        .map(|x| x as i8 - '0' as i8)
+        .collect::<Vec<_>>();
 
     let mut recipes = vec![3, 7];
     let mut index_a = 0;
@@ -33,10 +36,7 @@ pub fn run(_: &[&str]) {
     println!("answer A: {}", answer);
 
     // find position of given pattern
-    let answer = recipes
-        .windows(pattern.len())
-        .position(|w| w == &*pattern);
+    let answer = recipes.windows(pattern.len()).position(|w| w == &*pattern);
 
     println!("answer B: {:?}", answer);
-
 }
