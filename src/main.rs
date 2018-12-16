@@ -10,6 +10,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day14;
+mod day16;
 mod day2;
 mod day3;
 mod day4;
@@ -18,6 +19,10 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
+
+fn dummy(_: &[&str]) {
+    println!("not implemented");
+}
 
 fn main() {
     let mut args = env::args();
@@ -39,8 +44,10 @@ fn main() {
         day10::run,
         day11::run,
         day12::run,
+        dummy,
         day14::run,
-        day14::run,
+        dummy,
+        day16::run,
     ];
 
     match name.clone().map(|x| x.parse::<usize>()) {
