@@ -1,6 +1,7 @@
 #![feature(try_from)]
 use std::env;
 
+extern crate ndarray;
 extern crate regex;
 
 #[macro_use]
@@ -9,6 +10,7 @@ mod day1;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 mod day14;
 mod day16;
 mod day2;
@@ -44,7 +46,7 @@ fn main() {
         day10::run,
         day11::run,
         day12::run,
-        dummy,
+        day13::run,
         day14::run,
         dummy,
         day16::run,

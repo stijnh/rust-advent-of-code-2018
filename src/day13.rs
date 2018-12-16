@@ -1,138 +1,145 @@
 use crate::common::read_file_lines;
+use ndarray::prelude::*;
 use std::collections::HashSet;
+use std::convert::TryInto;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Dir {
-    North,
-    East,
-    South,
-    West,
-}
+type Cart = (char, i8, usize);
 
-use self::Dir::*;
-
-pub fn run(_: &[&str]) {
+fn parse_input() -> (Array2<char>, Array2<Option<Cart>>) {
+    let mut width = 0;
     let mut tracks = vec![];
-    let mut carts: Vec<(i32, i32, Dir, i8)> = vec![];
+    let mut carts = vec![];
 
     for (y, line) in read_file_lines("inputs/day13").iter().enumerate() {
-        let mut track = vec![];
+        let mut line_width = 0;
 
         for (x, c) in line.chars().enumerate() {
+            line_width += 1;
+
             match c {
-                '>' => {
-                    carts.push((x as i32, y as i32, East, 0));
-                    track.push('-');
-                },
-                '<' => {
-                    carts.push((x as i32, y as i32, West, 0));
-                    track.push('-');
-                },
-                '^' => {
-                    carts.push((x as i32, y as i32, North, 0));
-                    track.push('|');
-                },
-                'v' => {
-                    carts.push((x as i32, y as i32, South, 0));
-                    track.push('|');
-                },
-                c => track.push(c)
-            };
+                '>' | '<' => {
+                    carts.push(Some((c, 0, 0)));
+                    tracks.push('-');
+                }
+                '^' | 'v' => {
+                    carts.push(Some((c, 0, 0)));
+                    tracks.push('|');
+                }
+                c => {
+                    carts.push(None);
+                    tracks.push(c);
+                }
+            }
         }
 
-        tracks.push(track);
+        if y == 0 {
+            width = line_width;
+        } else if line_width != width {
+            panic!("uneven line widths one line {}", y);
+        }
     }
 
-    let mut occupied: HashSet<(i32, i32)> = carts
-        .iter()
-        .map(|(x, y, _, _)| (*x, *y))
-        .collect::<HashSet<_>>();
+    let shape = (tracks.len() / width, width);
+    (
+        Array2::from_shape_vec(shape, tracks).unwrap(),
+        Array2::from_shape_vec(shape, carts).unwrap(),
+    )
+}
 
+pub fn process_cell(
+    tick: usize,
+    i: usize,
+    j: usize,
+    tracks: &Array2<char>,
+    carts: &mut Array2<Option<Cart>>,
+) -> Option<(usize, usize)> {
+    let (c, mut mem) = match carts[[i, j]] {
+        Some((c, m, last_tick)) if last_tick < tick => {
+            carts[[i, j]] = None;
+            (c, m)
+        }
+        _ => return None,
+    };
 
-    let collisions = vec![];
+    let (ni, nj) = match c {
+        '^' => (i - 1, j),
+        '<' => (i, j - 1),
+        '>' => (i, j + 1),
+        'v' => (i + 1, j),
+        _ => panic!("unknown cart symbol {}", c),
+    };
 
-    while carts.len() > 1 {
-        carts.sort_by_key(|(x, y, _, _)| (*y, *x));
+    let nc = if tracks[[ni, nj]] == '+' {
+        let old_mem = mem;
+        mem = (mem + 1) % 3;
 
-        let mut index = 0;
-        let mut old_carts = carts;
-        carts = vec![];
-
-        while index < old_carts.len() {
-            let (x, y, dir, mut mem) = old_carts[index;
-            let (dx, dy) = match dir {
-                North => (0, -1),
-                South => (0, 1),
-                East => (1, 0),
-                West => (-1, 0)
-            };
-
-            let (nx, ny) = (x + dx, y + dy);
-            println!("{:?} '{}' => {:?} '{}'", 
-                     (x, y), 
-                     tracks[y as usize][x as usize],
-                     (nx, ny),
-                     tracks[ny as usize][nx as usize]);
-
-            if occupied.contains(&(nx, ny)) {
-                occupied.remove(&(nx, ny));
-                occupied.remove(&(x, y));
-                collision.push((nx, ny));
-
-                
-
-                continue;
-            }
-
-            let new_dir = match tracks[ny as usize][nx as usize] {
-                '/' => match dir {
-                    North => East,
-                    East => North,
-                    South => West,
-                    West => South,
-                },
-
-                '\\' => match dir {
-                    North => West,
-                    West => North,
-                    East => South,
-                    South => East,
-                },
-
-                '+' => {
-                    let old_mem = mem;
-                    mem = (mem + 1) % 3;
-
-                    match old_mem {
-                        0 => match dir {
-                            North => West,
-                            West => South,
-                            South => East,
-                            East => North,
-                        },
-                        2 => match dir {
-                            North => East,
-                            East => South,
-                            South => West,
-                            West => North,
-                        },
-                        _ => dir,
-                    }
-                },
-
-                '-' | '|' => dir,
-
-                c => panic!("unknown track {} at {:?}", c, (nx, ny)),
-
-            };
-
-            occupied.remove(&(x, y));
-            occupied.insert((nx, ny));
-            carts.push((nx, ny, new_dir, mem));
-
-            index += 1;
+        match (c, old_mem) {
+            ('^', 0) => '<',
+            ('^', 1) => '^',
+            ('^', 2) => '>',
+            ('>', 0) => '^',
+            ('>', 1) => '>',
+            ('>', 2) => 'v',
+            ('v', 0) => '>',
+            ('v', 1) => 'v',
+            ('v', 2) => '<',
+            ('<', 0) => 'v',
+            ('<', 1) => '<',
+            ('<', 2) => '^',
+            x => panic!("unknown pair {:?}", x),
+        }
+    } else {
+        match (c, tracks[[ni, nj]]) {
+            (_, '|') | (_, '-') => c,
+            ('^', '/') => '>',
+            ('>', '/') => '^',
+            ('v', '/') => '<',
+            ('<', '/') => 'v',
+            ('^', '\\') => '<',
+            ('>', '\\') => 'v',
+            ('v', '\\') => '>',
+            ('<', '\\') => '^',
+            x => panic!("unknown pair {:?}", x),
         }
     };
 
-    println!("answer A: {:?}", collision);
+    if let Some(_) = carts[[ni, nj]].take() {
+        Some((ni, nj))
+    } else {
+        carts[[ni, nj]] = Some((nc, mem, tick));
+        None
+    }
+}
+
+pub fn run(_: &[&str]) {
+    let (tracks, mut carts) = parse_input();
+    let (width, height) = (tracks.shape()[0], tracks.shape()[1]);
+    let mut num_carts = carts.iter().filter(|x| x.is_some()).count();
+    let mut collisions = vec![];
+    let mut tick = 0;
+
+    while num_carts > 1 {
+        tick += 1;
+        println!("tick: {}, carts: {}", tick, num_carts);
+
+        for i in 0..height {
+            for j in 0..width {
+                if let Some(p) = process_cell(tick, i, j, &tracks, &mut carts) {
+                    collisions.push(p);
+                    num_carts -= 2;
+                }
+            }
+        }
+    }
+
+    let (y, x) = collisions[0];
+    println!("answer A: {:?}", (x, y));
+
+    let (y, x) = carts
+        .indexed_iter()
+        .filter(|(_, c)| c.is_some())
+        .map(|(p, _)| p)
+        .next()
+        .unwrap();
+    println!("answer B: {:?}", (x, y));
 }
