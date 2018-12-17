@@ -3,6 +3,8 @@ use std::env;
 
 extern crate ndarray;
 extern crate regex;
+extern crate itertools;
+extern crate image;
 
 #[macro_use]
 mod common;
@@ -13,6 +15,7 @@ mod day12;
 mod day13;
 mod day14;
 mod day16;
+mod day17;
 mod day2;
 mod day3;
 mod day4;
@@ -50,6 +53,7 @@ fn main() {
         day14::run,
         dummy,
         day16::run,
+        day17::run,
     ];
 
     match name.clone().map(|x| x.parse::<usize>()) {
