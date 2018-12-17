@@ -1,7 +1,5 @@
 use crate::common::read_file_lines;
 use ndarray::prelude::*;
-use std::collections::HashSet;
-use std::convert::TryInto;
 
 type Cart = (char, i8, usize);
 
@@ -13,7 +11,7 @@ fn parse_input() -> (Array2<char>, Array2<Option<Cart>>) {
     for (y, line) in read_file_lines("inputs/day13").iter().enumerate() {
         let mut line_width = 0;
 
-        for (x, c) in line.chars().enumerate() {
+        for c in line.chars() {
             line_width += 1;
 
             match c {

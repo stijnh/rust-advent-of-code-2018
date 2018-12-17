@@ -1,5 +1,4 @@
 use crate::common::read_file_lines;
-use std::collections::HashSet;
 
 pub fn run(_: &[&str]) {
     let line = read_file_lines("inputs/day14")[0].clone();

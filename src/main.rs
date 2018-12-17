@@ -1,10 +1,10 @@
 #![feature(try_from)]
 use std::env;
 
+extern crate image;
+extern crate itertools;
 extern crate ndarray;
 extern crate regex;
-extern crate itertools;
-extern crate image;
 
 #[macro_use]
 mod common;

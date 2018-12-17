@@ -1,5 +1,5 @@
 use crate::common::read_file_lines;
-use regex::{Captures, Regex};
+use regex::Regex;
 use std::default::Default;
 
 type Instr = [i32; 4];
@@ -9,7 +9,7 @@ fn parse_captures(re: &Regex, line: &str) -> [i32; 4] {
     if let Some(cap) = re.captures(line) {
         let mut output = [0; 4];
 
-        let vec = cap
+        cap
             .iter()
             .skip(1)
             .map(|x| x.unwrap().as_str())

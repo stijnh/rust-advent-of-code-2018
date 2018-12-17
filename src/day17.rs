@@ -1,9 +1,6 @@
 use crate::common::read_file_lines;
-use regex::Regex;
-use std::convert::TryInto;
-use std::collections::HashSet;
-use itertools::Itertools;
 use ndarray::prelude::*;
+use regex::Regex;
 
 fn parse_input() -> Array2<char> {
     let re_xy = Regex::new(r"x=(\d+), y=(\d+)..(\d+)").unwrap();
@@ -11,8 +8,6 @@ fn parse_input() -> Array2<char> {
     let mut points = vec![];
 
     for line in read_file_lines("inputs/day17") {
-        let (mut x_min, mut x_max) = (0, 0);
-        let (mut y_min, mut y_max) = (0, 0);
         let to_int = |s: &str| s.parse::<i32>().unwrap();
 
         let bounds = if let Some(cap) = re_xy.captures(&line) {
@@ -54,7 +49,11 @@ fn parse_input() -> Array2<char> {
     ground
 }
 
-fn fill_horizontal(sign: isize, [mut x, y]: [usize; 2], ground: &mut Array2<char>) -> (usize, bool) {
+fn fill_horizontal(
+    sign: isize,
+    [mut x, y]: [usize; 2],
+    ground: &mut Array2<char>,
+) -> (usize, bool) {
     loop {
         let nx = (x as isize + sign) as usize;
 
@@ -65,7 +64,7 @@ fn fill_horizontal(sign: isize, [mut x, y]: [usize; 2], ground: &mut Array2<char
                 if fill_down([nx, y], ground) {
                     break (nx, true);
                 }
-            },
+            }
             '~' => break (x, true),
             '#' => break (x, false),
             c => panic!("unexpected character {:?}", c),
@@ -75,11 +74,11 @@ fn fill_horizontal(sign: isize, [mut x, y]: [usize; 2], ground: &mut Array2<char
     }
 }
 
-fn fill_right([mut x, y]: [usize; 2], ground: &mut Array2<char>) -> (usize, bool) {
+fn fill_right([x, y]: [usize; 2], ground: &mut Array2<char>) -> (usize, bool) {
     fill_horizontal(1, [x, y], ground)
 }
 
-fn fill_left([mut x, y]: [usize; 2], ground: &mut Array2<char>) -> (usize, bool) {
+fn fill_left([x, y]: [usize; 2], ground: &mut Array2<char>) -> (usize, bool) {
     fill_horizontal(-1, [x, y], ground)
 }
 
@@ -87,11 +86,11 @@ fn fill_down([x, y]: [usize; 2], ground: &mut Array2<char>) -> bool {
     let mut dy = 1;
     let height = ground.shape()[1];
 
-    loop { 
+    loop {
         if y + dy >= height {
             return true;
-        } 
-        
+        }
+
         match ground[[x, y + dy]] {
             ' ' => ground[[x, y + dy]] = '~',
             '#' | '-' => break,
@@ -141,7 +140,6 @@ fn write_image(ground: &Array2<char>) {
         }
     }
 
-
     let filename = "day17.png";
     img.save(filename).unwrap();
     println!("saved image as {:?}", filename);
@@ -150,19 +148,13 @@ fn write_image(ground: &Array2<char>) {
 pub fn run(_: &[&str]) {
     let mut ground = parse_input();
     let spring: [usize; 2] = [500, 0];
-    
+
     ground[spring] = '~';
     fill_down(spring, &mut ground);
 
-    let answer_a = ground
-        .iter()
-        .filter(|c| **c == '~' || **c == '-')
-        .count();
+    let answer_a = ground.iter().filter(|c| **c == '~' || **c == '-').count();
 
-    let answer_b = ground
-        .iter()
-        .filter(|c| **c == '-')
-        .count();
+    let answer_b = ground.iter().filter(|c| **c == '-').count();
 
     println!("answer A: {}", answer_a);
     println!("answer B: {}", answer_b);
