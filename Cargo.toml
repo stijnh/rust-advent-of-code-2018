@@ -4,6 +4,11 @@ version = "0.1.0"
 authors = ["stijnh <mail@stijnh.nl>"]
 edition = "2018"
 
+[profile.release]
+lto = true
+panic = "abort"
+opt-level = 3
+
 [dependencies]
 regex = "1.1.0"
 ndarray = "0.12.1"

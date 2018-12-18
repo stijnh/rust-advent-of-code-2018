@@ -9,8 +9,7 @@ fn parse_captures(re: &Regex, line: &str) -> [i32; 4] {
     if let Some(cap) = re.captures(line) {
         let mut output = [0; 4];
 
-        cap
-            .iter()
+        cap.iter()
             .skip(1)
             .map(|x| x.unwrap().as_str())
             .map(|x| x.parse::<i32>().expect(x))
