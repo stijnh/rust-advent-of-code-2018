@@ -2,7 +2,9 @@
 use std::env;
 
 extern crate image;
+#[macro_use]
 extern crate itertools;
+#[macro_use]
 extern crate ndarray;
 extern crate regex;
 
@@ -24,8 +26,9 @@ mod day13;
 mod day14;
 mod day16;
 mod day17;
+mod day18;
 
-fn dummy(_: &[&str]) {
+fn notimplemented(_: &[&str]) {
     println!("not implemented");
 }
 
@@ -37,23 +40,31 @@ fn main() {
     let rest = tail.iter().map(|x| x as &str).collect::<Vec<_>>();
 
     let funs = [
-        day1::run,
-        day2::run,
-        day3::run,
-        day4::run,
-        day5::run,
-        day6::run,
-        day7::run,
-        day8::run,
-        day9::run,
+        day01::run,
+        day02::run,
+        day03::run,
+        day04::run,
+        day05::run,
+        day06::run,
+        day07::run,
+        day08::run,
+        day09::run,
         day10::run,
         day11::run,
         day12::run,
         day13::run,
         day14::run,
-        dummy,
+        notimplemented,
         day16::run,
         day17::run,
+        day18::run,
+        notimplemented,
+        notimplemented,
+        notimplemented,
+        notimplemented,
+        notimplemented,
+        notimplemented,
+        notimplemented,
     ];
 
     match name.clone().map(|x| x.parse::<usize>()) {
