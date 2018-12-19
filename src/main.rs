@@ -27,6 +27,7 @@ mod day14;
 mod day16;
 mod day17;
 mod day18;
+mod day19;
 
 fn notimplemented(_: &[&str]) {
     println!("not implemented");
@@ -58,7 +59,7 @@ fn main() {
         day16::run,
         day17::run,
         day18::run,
-        notimplemented,
+        day19::run,
         notimplemented,
         notimplemented,
         notimplemented,
