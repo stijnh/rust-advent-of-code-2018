@@ -25,29 +25,16 @@ fn simulate(current: &Array2<char>, next: &mut Array2<char>) {
     for (entry, win) in izip!(inner, windows) {
         let mut num_yards = 0;
         let mut num_trees = 0;
-        let indices = [
-            [0, 0],
-            [0, 1],
-            [0, 2],
-            [1, 0],
-            [1, 2],
-            [2, 0],
-            [2, 1],
-            [2, 2],
-        ];
 
-        for index in &indices {
-            match win[*index] {
-                '#' => num_yards += 1,
-                '|' => num_trees += 1,
-                _ => {}
-            }
+        for c in win {
+            num_yards += iff!(*c == '#', 1, 0);
+            num_trees += iff!(*c == '|', 1, 0);
         }
 
         *entry = match win[[1, 1]] {
             '.' => iff!(num_trees >= 3, '|', '.'),
             '|' => iff!(num_yards >= 3, '#', '|'),
-            '#' => iff!(num_trees >= 1 && num_yards >= 1, '#', '.'),
+            '#' => iff!(num_trees >= 1 && num_yards >= 2, '#', '.'),
             x => panic!("unknown symbol {:?}", x),
         };
     }
