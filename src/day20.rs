@@ -1,85 +1,68 @@
 use crate::common::read_file_lines;
-use std::iter::Peekable;
-use std::collections::{HashSet, HashMap};
-use std::mem::swap;
-use ndarray::prelude::*;
+use std::collections::{HashMap as Map, HashSet as Set, VecDeque as Deque};
 
 type Point = [i32; 2];
 type Door = (Point, Point);
 
-#[derive(Debug)]
-enum Node {
-    Leaf(char),
-    Seq(Vec<Node>),
-    Alt(Vec<Node>),
+#[derive(Debug, Clone)]
+enum MyRegex {
+    Leaf(char),        // Single character
+    Seq(Vec<MyRegex>), // Sequence of exprs
+    Alt(Vec<MyRegex>), // Options for exprs
 }
 
-
-fn parse_node(iter: &mut Peekable<impl Iterator<Item = char>>) -> Node {
+fn parse_myregex(iter: &mut Deque<char>) -> MyRegex {
     let mut options = vec![];
     let mut curr = vec![];
 
-    while let Some(c) = iter.peek() {
+    while let Some(c) = iter.pop_front() {
         match c {
             '|' => {
-                assert!(iter.next() == Some('|'));
-                options.push(Node::Seq(curr));
+                options.push(MyRegex::Seq(curr));
                 curr = vec![];
-            },
+            }
             '(' => {
-                assert!(iter.next() == Some('('));
-                let v = parse_node(iter);
-                assert!(iter.next() == Some(')'));
-                curr.push(v);
-            },
+                curr.push(parse_myregex(iter));
+                assert!(iter.pop_front() == Some(')'));
+            }
             'N' | 'S' | 'E' | 'W' => {
-                let c = iter.next().unwrap();
-                curr.push(Node::Leaf(c));
-            },
-            _ => break,
+                curr.push(MyRegex::Leaf(c));
+            }
+            _ => {
+                iter.push_front(c);
+                break;
+            }
         }
     }
 
-    options.push(Node::Seq(curr));
-    Node::Alt(options)
+    options.push(MyRegex::Seq(curr));
+    MyRegex::Alt(options)
 }
 
-fn parse_input() -> Node {
+fn parse_input() -> MyRegex {
     let lines = read_file_lines("inputs/day20");
-    let mut iter = lines[0].chars().peekable();
+    let mut iter = lines[0].chars().collect::<Deque<_>>();
 
-    assert!(iter.next() == Some('^'));
-    let root = parse_node(&mut iter);
-    assert!(iter.next() == Some('$'));
-    assert!(iter.next() == None);
+    assert!(iter.pop_front() == Some('^'));
+    assert!(iter.pop_back() == Some('$'));
 
-    root
+    parse_myregex(&mut iter)
 }
 
-fn simulate(node: &Node, active: &HashSet<Point>, doors: &mut HashSet<Door>) -> HashSet<Point> {
+fn walk_paths(node: &MyRegex, active: &Set<Point>, doors: &mut Set<Door>) -> Set<Point> {
     match node {
-        Node::Seq(vec) => {
-            let mut current = active.clone();
-
-            for node in vec {
-                current = simulate(node, &current, doors);
-            }
-
-            current
-        },
-        Node::Alt(vec) => {
-            let mut end = HashSet::new();
-
-            for node in vec {
-                end.extend(simulate(node, active,  doors));
-            }
-
-            end
-        },
-        Node::Leaf(c) => {
-            let mut new_active = HashSet::new();
-
-            for src in active.iter().cloned() {
+        MyRegex::Seq(vec) => vec
+            .iter()
+            .fold(active.clone(), |c, node| walk_paths(node, &c, doors)),
+        MyRegex::Alt(vec) => vec
+            .iter()
+            .map(|node| walk_paths(node, active, doors))
+            .flatten()
+            .collect(),
+        MyRegex::Leaf(c) => active
+            .iter()
+            .cloned()
+            .map(|src| {
                 let [x, y] = src;
                 let dst = match c {
                     'N' => [x, y + 1],
@@ -92,39 +75,30 @@ fn simulate(node: &Node, active: &HashSet<Point>, doors: &mut HashSet<Door>) -> 
                 doors.insert((src, dst));
                 doors.insert((dst, src));
 
-                new_active.insert(dst);
-            }
-
-            new_active
-        }
+                dst
+            })
+            .collect(),
     }
 }
 
-fn find_room_dists(center: Point, doors: &HashSet<Door>) -> HashMap<Point, i32> {
-    let mut adj = HashMap::<Point, Vec<Point>>::new();
+fn find_room_dists(center: Point, doors: &Set<Door>) -> Map<Point, i32> {
+    let mut adj = Map::<Point, Vec<Point>>::new();
     for (a, b) in doors {
         adj.entry(*a).or_insert(vec![]).push(*b);
     }
 
-    let mut round = 0;
-    let mut dists = HashMap::new();
-    let mut frontier = vec![center];
-    let mut next_frontier = vec![];
+    let mut dists = Map::new();
+    let mut queue = Deque::new();
+    queue.push_back((center, 0));
 
-    while !frontier.is_empty() {
-        for v in &frontier {
-            if !dists.contains_key(v) {
-                dists.insert(*v, round);
+    while let Some((v, d)) = queue.pop_front() {
+        if !dists.contains_key(&v) {
+            dists.insert(v, d);
 
-                for u in &adj[v] {
-                    next_frontier.push(*u);
-                }
+            for u in &adj[&v] {
+                queue.push_back((*u, d + 1));
             }
         }
-
-        frontier = next_frontier;
-        next_frontier = vec![];
-        round += 1;
     }
 
     dists
@@ -133,12 +107,11 @@ fn find_room_dists(center: Point, doors: &HashSet<Door>) -> HashMap<Point, i32> 
 pub fn run(_: &[&str]) {
     let root = parse_input();
 
-    let mut doors = HashSet::new();
-    let mut active = HashSet::new();
-
+    let mut doors = Set::new();
+    let mut active = Set::new();
     active.insert([0, 0]);
 
-    let _ = simulate(&root, &active, &mut doors);
+    let _ = walk_paths(&root, &active, &mut doors);
     let dists = find_room_dists([0, 0], &doors);
 
     let max_dist = dists.values().max();

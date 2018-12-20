@@ -1,4 +1,5 @@
 #![feature(try_from)]
+#![feature(bind_by_move_pattern_guards)]
 use std::env;
 
 extern crate image;
@@ -7,6 +8,7 @@ extern crate itertools;
 #[macro_use]
 extern crate ndarray;
 extern crate regex;
+extern crate typed_arena;
 
 #[macro_use]
 mod common;
@@ -28,6 +30,7 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
+mod day20;
 
 fn notimplemented(_: &[&str]) {
     println!("not implemented");
@@ -60,7 +63,7 @@ fn main() {
         day17::run,
         day18::run,
         day19::run,
-        notimplemented,
+        day20::run,
         notimplemented,
         notimplemented,
         notimplemented,
