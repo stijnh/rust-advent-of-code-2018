@@ -7,8 +7,8 @@ extern crate image;
 extern crate itertools;
 #[macro_use]
 extern crate ndarray;
+extern crate binary_heap_plus;
 extern crate regex;
-extern crate typed_arena;
 
 #[macro_use]
 mod common;
@@ -31,6 +31,8 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
+mod day22;
 
 fn notimplemented(_: &[&str]) {
     println!("not implemented");
@@ -64,8 +66,8 @@ fn main() {
         day18::run,
         day19::run,
         day20::run,
-        notimplemented,
-        notimplemented,
+        day21::run,
+        day22::run,
         notimplemented,
         notimplemented,
         notimplemented,
