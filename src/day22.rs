@@ -2,8 +2,7 @@ use binary_heap_plus::BinaryHeap;
 use crate::common::read_file_lines;
 use ndarray::prelude::*;
 use regex::Regex;
-use std::collections::hash_map::{HashMap, Entry};
-
+use std::collections::hash_map::{Entry, HashMap};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 enum Tool {
@@ -97,7 +96,7 @@ fn find_paths(cave: &Array2<Surface>, target: [usize; 2]) -> i32 {
     while let Some((x, y, tool, time)) = queue.pop() {
         match dists.entry((x, y, tool)) {
             Entry::Vacant(v) => v.insert(time),
-            Entry::Occupied(_) => continue
+            Entry::Occupied(_) => continue,
         };
 
         let adj = [
@@ -107,7 +106,7 @@ fn find_paths(cave: &Array2<Surface>, target: [usize; 2]) -> i32 {
             (x, y + 1, tool, time + 1),
             (x, y, Torch, time + 7),
             (x, y, Gear, time + 7),
-            (x, y, Empty, time + 7)
+            (x, y, Empty, time + 7),
         ];
 
         for (x, y, tool, time) in adj.iter().cloned() {
