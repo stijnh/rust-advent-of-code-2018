@@ -9,6 +9,8 @@ extern crate itertools;
 extern crate ndarray;
 extern crate binary_heap_plus;
 extern crate regex;
+#[macro_use]
+extern crate enumset;
 
 #[macro_use]
 mod common;
@@ -34,6 +36,7 @@ mod day20;
 mod day21;
 mod day22;
 mod day23;
+mod day24;
 
 fn notimplemented(_: &[&str]) {
     println!("not implemented");
@@ -70,7 +73,7 @@ fn main() {
         day21::run,
         day22::run,
         day23::run,
-        notimplemented,
+        day24::run,
         notimplemented,
     ];
 
