@@ -1,3 +1,4 @@
+use binary_heap_plus::BinaryHeap;
 use crate::common::read_file_lines;
 use regex::Regex;
 
@@ -60,57 +61,52 @@ pub fn run(_: &[&str]) {
         }
     }
 
+    let mut best = (0, [0, 0, 0]);
+
     // initial volume is entire space
-    let mut vols = vec![(0, 0, [-step, -step, -step])];
-    step *= 2;
+    let mut queue = BinaryHeap::new_by_key(|v: &(i64, i64, i64, _)| (v.0, v.2, -v.1));
+    queue.push((0, 0, 2 * step, [-step, -step, -step]));
 
-    while step >= 1 {
-        let mut new_vols = vec![];
-
-        // generate new volumes of each octant
-        for (_, _, [cx, cy, cz]) in vols {
-            for (i, j, k) in iproduct!(0..2, 0..2, 0..2) {
-                let ax = cx + i * step;
-                let ay = cy + j * step;
-                let az = cz + k * step;
-
-                let bx = ax + step - 1;
-                let by = ay + step - 1;
-                let bz = az + step - 1;
-
-                // compute 2*distance to center
-                let dist = (ax + bx).abs() + (ay + by).abs() + (az + bz).abs();
-
-                // compute upper bound for bots in range of volume
-                let mut count = 0;
-                for bot in &bots {
-                    let mut cost = 0;
-                    cost += (ax - bot[0]).max(0);
-                    cost += (bot[0] - bx).max(0);
-                    cost += (ay - bot[1]).max(0);
-                    cost += (bot[1] - by).max(0);
-                    cost += (az - bot[2]).max(0);
-                    cost += (bot[2] - bz).max(0);
-
-                    if cost <= bot[3] {
-                        count += 1;
-                    }
-                }
-
-                new_vols.push((count, dist, [ax, ay, az]));
-            }
+    while let Some((c, _, step, [cx, cy, cz])) = queue.pop() {
+        if step == 1 {
+            best = (c, [cx, cy, cz]);
+            break;
         }
 
-        // keep the best 10,000 volumes
-        new_vols.sort_by(|a, b| iff!(a.0 != b.0, (a.0).cmp(&b.0).reverse(), (a.1).cmp(&b.1)));
-        new_vols.truncate(10000);
-        println!("best for step {}: {:?}", step, new_vols[0]);
+        // generate new volumes of each octant
+        for (i, j, k) in iproduct!(0..2, 0..2, 0..2) {
+            let half_step = step / 2;
 
-        vols = new_vols;
-        step /= 2;
+            let ax = cx + i * half_step;
+            let ay = cy + j * half_step;
+            let az = cz + k * half_step;
+
+            let bx = ax + half_step - 1;
+            let by = ay + half_step - 1;
+            let bz = az + half_step - 1;
+
+            // compute 2*distance to center
+            let dist = (ax + bx).abs() + (ay + by).abs() + (az + bz).abs();
+
+            // compute upper bound for bots in range of volume
+            let mut max_count = 0;
+
+            for bot in &bots {
+                let mut min_cost = 0;
+                min_cost += (ax - bot[0]).max(0) + (bot[0] - bx).max(0);
+                min_cost += (ay - bot[1]).max(0) + (bot[1] - by).max(0);
+                min_cost += (az - bot[2]).max(0) + (bot[2] - bz).max(0);
+
+                if min_cost <= bot[3] {
+                    max_count += 1;
+                }
+            }
+
+            queue.push((max_count, dist, half_step, [ax, ay, az]));
+        }
     }
 
-    let (count, _, [x, y, z]) = vols[0];
+    let (count, [x, y, z]) = best;
     println!(
         "answer B: {} ({} nanobots in range)",
         x.abs() + y.abs() + z.abs(),
