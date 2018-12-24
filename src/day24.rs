@@ -129,14 +129,8 @@ fn target_round(armies: &[Army]) -> Vec<Option<usize>> {
     let mut targets = vec![None; n];
 
     let mut indices = (0..n).collect::<Vec<_>>();
-    indices.sort_by_key(|i| {
-        (
-            armies[*i].damage * armies[*i].units,
-            armies[*i].initiative,
-        )
-    });
+    indices.sort_by_key(|i| (armies[*i].damage * armies[*i].units, armies[*i].initiative));
     indices.reverse();
-
 
     for i in indices {
         let mut target = None;
