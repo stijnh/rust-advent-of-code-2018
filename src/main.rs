@@ -38,10 +38,7 @@ mod day21;
 mod day22;
 mod day23;
 mod day24;
-
-fn notimplemented(_: &[&str]) {
-    println!("not implemented");
-}
+mod day25;
 
 fn main() {
     let mut args = env::args();
@@ -75,7 +72,7 @@ fn main() {
         day22::run,
         day23::run,
         day24::run,
-        notimplemented,
+        day25::run,
     ];
 
     match name.clone().map(|x| x.parse::<usize>()) {

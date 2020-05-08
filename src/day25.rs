@@ -1,6 +1,7 @@
 use crate::common::read_file_lines;
 use itertools::enumerate;
 use std::collections::HashSet;
+use std::iter::FromIterator;
 
 pub fn run(_: &[&str]) {
     let mut points: Vec<[i64; 4]> = vec![];
@@ -27,15 +28,17 @@ pub fn run(_: &[&str]) {
                 + (p[3] - q[3]).abs();
 
             if dist <= 3 && labels[i] != labels[j] {
-                for l in labels.iter_mut() {
-                    if *l == labels[i] {
-                        *l = labels[j];
+                let (src, dst) = (labels[i], labels[j]);
+
+                for l in &mut labels {
+                    if *l == src { 
+                        *l = dst;
                     }
                 }
             }
         }
     }
 
-    let uniq_labels = labels.iter().collect::<HashSet<_>>();
+    let uniq_labels = HashSet::<_>::from_iter(labels);
     println!("answer A: {}", uniq_labels.len());
 }
